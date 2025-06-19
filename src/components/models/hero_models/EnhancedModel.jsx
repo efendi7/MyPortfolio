@@ -1,73 +1,113 @@
 /*
-Safe Enhanced Room Model 
-Model only - EffectComposer is now correctly placed in EnhancedModelWithEffects.
+Enhanced Room Model - Responsive PC & Mobile Versions
+Automatically detects device capability and loads appropriate version
 */
 
-import React, { useRef, forwardRef, useEffect, useState } from 'react'; // Added useEffect and useState imports
+import React, { useRef, forwardRef, useEffect, useState, useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import { EffectComposer, SelectiveBloom } from "@react-three/postprocessing";
 import { BlendFunction } from "postprocessing";
 import * as THREE from 'three';
 
-// EnhancedModel is the core component that loads and renders the GLB model.
-// It uses forwardRef to allow parent components to pass refs to specific mesh objects.
-export const EnhancedModel = forwardRef((props, refs) => {
-  // Load the GLB model. Ensure the path is correct: /public/models/low_poly_isometric_room.glb
-  const { nodes, materials } = useGLTF('/models/low_poly_isometric_room.glb');
-  
-  // Destructure refs from parent component (EnhancedModelWithEffects)
-  const { screenRef, lampRef, lightRef } = refs || {};
-  
-  // Define enhanced materials for specific parts of the model to achieve bloom effect
-  const enhancedScreenMaterial = new THREE.MeshStandardMaterial({
-    color: materials.screen?.color || 0x00ff88,
-    emissive: new THREE.Color(0x00ff88),
-    emissiveIntensity: 0.5,
-  });
-  
-  const enhancedLightMaterial = new THREE.MeshStandardMaterial({
-    color: materials.light?.color || 0xffffff,
-    emissive: new THREE.Color(0xffffff),
-    emissiveIntensity: 0.8,
-  });
-  
-  const enhancedLampMaterial = new THREE.MeshStandardMaterial({
-    color: materials.lamapra?.color || 0xfff4e6,
-    emissive: new THREE.Color(0xfff4e6),
-    emissiveIntensity: 0.3,
-  });
+// Device detection utility
+const useDeviceDetection = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  const [isLowPerformance, setIsLowPerformance] = useState(false);
 
-  // --- DEBUGGING REFS: UNCOMMENT THIS BLOCK TO SEE REF VALUES IN CONSOLE ---
-  // This useEffect will log the current value of the refs to the console,
-  // helping to verify if they are successfully attached to the mesh objects.
-  /*
   useEffect(() => {
-    console.log("EnhancedModel mounted. Checking refs...");
-    if (screenRef && screenRef.current) {
-      console.log("screenRef current:", screenRef.current.name, screenRef.current);
+    // Check if device is mobile
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      const mobileRegex = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i;
+      return mobileRegex.test(userAgent.toLowerCase());
+    };
+
+    // Check device performance indicators
+    const checkPerformance = () => {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      
+      if (!gl) return true; // No WebGL support, assume low performance
+      
+      const renderer = gl.getParameter(gl.RENDERER);
+      const vendor = gl.getParameter(gl.VENDOR);
+      
+      // Check for low-end GPU indicators
+      const lowEndIndicators = [
+        'adreno 3', 'adreno 4', 'adreno 5',
+        'mali-4', 'mali-t7', 'mali-t8',
+        'powervr sgx', 'intel hd 3000',
+        'intel hd 4000'
+      ];
+      
+      const isLowEnd = lowEndIndicators.some(indicator => 
+        renderer.toLowerCase().includes(indicator)
+      );
+      
+      // Check memory (if available)
+      const memory = navigator.deviceMemory;
+      const lowMemory = memory && memory < 4;
+      
+      // Check CPU cores
+      const cores = navigator.hardwareConcurrency;
+      const lowCores = cores && cores < 4;
+      
+      return isLowEnd || lowMemory || lowCores;
+    };
+
+    setIsMobile(checkMobile());
+    setIsLowPerformance(checkPerformance());
+  }, []);
+
+  return { isMobile, isLowPerformance };
+};
+
+// Base Model Component (shared between PC and mobile)
+const BaseModel = forwardRef(({ enableEffects = true, simplifiedMaterials = false, ...props }, refs) => {
+  const { nodes, materials } = useGLTF('/models/low_poly_isometric_room.glb');
+  const { screenRef, lampRef, lightRef } = refs || {};
+
+  // Material creation with performance optimization
+  const enhancedMaterials = useMemo(() => {
+    if (simplifiedMaterials) {
+      // Simplified materials for mobile
+      return {
+        screen: new THREE.MeshBasicMaterial({
+          color: materials.screen?.color || 0x00ff88,
+        }),
+        light: new THREE.MeshBasicMaterial({
+          color: materials.light?.color || 0xffffff,
+        }),
+        lamp: new THREE.MeshBasicMaterial({
+          color: materials.lamapra?.color || 0xfff4e6,
+        })
+      };
     } else {
-      console.log("screenRef is null or undefined.");
+      // Enhanced materials for PC
+      return {
+        screen: new THREE.MeshStandardMaterial({
+          color: materials.screen?.color || 0x00ff88,
+          emissive: new THREE.Color(0x00ff88),
+          emissiveIntensity: 0.5,
+        }),
+        light: new THREE.MeshStandardMaterial({
+          color: materials.light?.color || 0xffffff,
+          emissive: new THREE.Color(0xffffff),
+          emissiveIntensity: 0.8,
+        }),
+        lamp: new THREE.MeshStandardMaterial({
+          color: materials.lamapra?.color || 0xfff4e6,
+          emissive: new THREE.Color(0xfff4e6),
+          emissiveIntensity: 0.3,
+        })
+      };
     }
-    if (lampRef && lampRef.current) {
-      console.log("lampRef current:", lampRef.current.name, lampRef.current);
-    } else {
-      console.log("lampRef is null or undefined.");
-    }
-    if (lightRef && lightRef.current) {
-      console.log("lightRef current:", lightRef.current.name, lightRef.current);
-    } else {
-      console.log("lightRef is null or undefined.");
-    }
-  }, [screenRef, lampRef, lightRef]); // Dependency array to re-run when refs change
-  */
-  // --- END DEBUGGING REFS ---
+  }, [materials, simplifiedMaterials]);
 
   return (
-   <group {...props} dispose={null} rotation={[0, Math.PI, 0]} scale={[0.5, 0.5, 0.5]}>
-      {/* Main room structure - using materials provided by the GLB */}
+    <group {...props} dispose={null} rotation={[0, Math.PI, 0]} scale={[0.5, 0.5, 0.5]}>
+      {/* Main room structure */}
       <group position={[0.095, -0.373, 0.14]} scale={4.819}>
-        {/* Each mesh below corresponds to a part of the 3D model */}
-        {/* It's crucial that 'nodes.Object_X.geometry' and 'materials.NAME' exist in your GLB */}
         {nodes.Object_4 && <mesh geometry={nodes.Object_4.geometry} material={materials.pared} />}
         {nodes.Object_5 && <mesh geometry={nodes.Object_5.geometry} material={materials.suelo} />}
         {nodes.Object_6 && <mesh geometry={nodes.Object_6.geometry} material={materials.afuera} />}
@@ -93,34 +133,26 @@ export const EnhancedModel = forwardRef((props, refs) => {
         {nodes.Object_31 && <mesh geometry={nodes.Object_31.geometry} material={materials.pcinsidenormal} />}
       </group>
 
-      {/* Monitor with bloom effect - Check if node exists before using ref */}
+      {/* Monitor with conditional bloom effect */}
       <group position={[-3.781, 2.47, -1.132]} scale={1.456}>
         {nodes.Object_33 && <mesh geometry={nodes.Object_33.geometry} material={materials.negro} />}
-        {/*
-          IMPORTANT: Replace 'Object_34' with the EXACT name of your screen's mesh node
-          found in the GLB viewer (e.g., 'ScreenDisplay', 'MonitorSurface', etc.)
-        */}
-        {nodes.Object_34 && ( // If node exists, assign ref
+        {nodes.Object_34 && (
           <mesh 
-            ref={screenRef} // Assign ref for SelectiveBloom targeting
+            ref={enableEffects ? screenRef : null}
             geometry={nodes.Object_34.geometry} 
-            material={enhancedScreenMaterial} 
+            material={enhancedMaterials.screen} 
           />
         )}
       </group>
 
-      {/* Light with bloom effect - Check if node exists before using ref */}
+      {/* Light with conditional bloom effect */}
       <group position={[-2.793, 1.422, -2.237]} scale={[0.137, 0.04, 0.083]}>
         {nodes.Object_36 && <mesh geometry={nodes.Object_36.geometry} material={materials.negro} />}
-        {/*
-          IMPORTANT: Replace 'Object_37' with the EXACT name of your light's mesh node
-          found in the GLB viewer (e.g., 'StripLight', 'CeilingLight', etc.)
-        */}
-        {nodes.Object_37 && ( // If node exists, assign ref
+        {nodes.Object_37 && (
           <mesh 
-            ref={lightRef} // Assign ref for SelectiveBloom targeting
+            ref={enableEffects ? lightRef : null}
             geometry={nodes.Object_37.geometry} 
-            material={enhancedLightMaterial} 
+            material={enhancedMaterials.light} 
           />
         )}
       </group>
@@ -137,17 +169,13 @@ export const EnhancedModel = forwardRef((props, refs) => {
         {nodes.Object_47 && <mesh geometry={nodes.Object_47.geometry} material={materials.gris} />}
       </group>
 
-      {/* Lamp with bloom effect - Check if node exists before using ref */}
+      {/* Lamp with conditional bloom effect */}
       <group position={[0.245, 1.026, -3.312]} scale={[0.316, 0.045, 0.316]}>
-        {/*
-          IMPORTANT: Replace 'Object_49' with the EXACT name of your lamp's mesh node
-          found in the GLB viewer (e.g., 'TableLampBulb', 'LightFixture', etc.)
-        */}
-        {nodes.Object_49 && ( // If node exists, assign ref
+        {nodes.Object_49 && (
           <mesh 
-            ref={lampRef} // Assign ref for SelectiveBloom targeting
+            ref={enableEffects ? lampRef : null}
             geometry={nodes.Object_49.geometry} 
-            material={enhancedLampMaterial} 
+            material={enhancedMaterials.lamp} 
           />
         )}
         {nodes.Object_50 && <mesh geometry={nodes.Object_50.geometry} material={materials.negro} />}
@@ -159,7 +187,7 @@ export const EnhancedModel = forwardRef((props, refs) => {
         {nodes.Object_55 && <mesh geometry={nodes.Object_55.geometry} material={materials.libro} />}
       </group>
 
-      {/* Individual objects - added checks for node existence */}
+      {/* Individual objects */}
       {nodes.Object_10 && <mesh geometry={nodes.Object_10.geometry} material={materials.material_0} position={[-3.66, 0.011, 1.339]} scale={0.577} />}
       {nodes.Object_12 && <mesh geometry={nodes.Object_12.geometry} material={materials.material_0} position={[-3.492, 0.078, 1.435]} rotation={[0, 0, -0.878]} scale={0.577} />}
       {nodes.Object_14 && <mesh geometry={nodes.Object_14.geometry} material={materials.negro} position={[-3.58, 0.515, 1.407]} scale={0.394} />}
@@ -174,52 +202,62 @@ export const EnhancedModel = forwardRef((props, refs) => {
   );
 });
 
-// EnhancedModelWithEffects is a wrapper component that adds the EffectComposer.
-// This separation ensures the model itself is clean and effects are applied externally.
-export function EnhancedModelWithEffects(props) {
+// PC Version - Full effects and enhanced materials
+export const EnhancedModelPC = forwardRef((props, refs) => {
+  return (
+    <BaseModel 
+      {...props} 
+      refs={refs}
+      enableEffects={true}
+      simplifiedMaterials={false}
+    />
+  );
+});
+
+// Mobile Version - Simplified materials and no effects
+export const EnhancedModelMobile = forwardRef((props, refs) => {
+  return (
+    <BaseModel 
+      {...props} 
+      refs={refs}
+      enableEffects={false}
+      simplifiedMaterials={true}
+    />
+  );
+});
+
+// PC Version with Effects
+export function EnhancedModelPCWithEffects(props) {
   const screenRef = useRef();
   const lampRef = useRef();
   const lightRef = useRef();
-
-  // State to hold the actual mesh objects for SelectiveBloom
   const [bloomSelection, setBloomSelection] = useState([]);
 
-  // Use useEffect to update the bloomSelection state only when refs are populated
   useEffect(() => {
     const selectedObjects = [];
-    if (screenRef.current) {
-      selectedObjects.push(screenRef.current);
-    }
-    if (lampRef.current) {
-      selectedObjects.push(lampRef.current);
-    }
-    if (lightRef.current) {
-      selectedObjects.push(lightRef.current);
-    }
-    // Only update state if the selection array has changed to prevent unnecessary re-renders
+    if (screenRef.current) selectedObjects.push(screenRef.current);
+    if (lampRef.current) selectedObjects.push(lampRef.current);
+    if (lightRef.current) selectedObjects.push(lightRef.current);
+    
     if (JSON.stringify(selectedObjects.map(obj => obj.uuid)) !== JSON.stringify(bloomSelection.map(obj => obj.uuid))) {
       setBloomSelection(selectedObjects);
     }
-  }, [screenRef, lampRef, lightRef, bloomSelection]); // Depend on refs and current bloomSelection for comparison
+  }, [screenRef, lampRef, lightRef, bloomSelection]);
 
   return (
     <>
-      {/* Render the core model, passing the refs down */}
-      <EnhancedModel 
+      <EnhancedModelPC 
         {...props} 
         refs={{ screenRef, lampRef, lightRef }} 
       />
-      {/* EffectComposer placed here to apply post-processing effects */}
       <EffectComposer>
-        {/* SelectiveBloom targets specific meshes (via refs) for a glowing effect */}
-        {/* Only apply SelectiveBloom if there are objects in bloomSelection */}
         {bloomSelection.length > 0 && (
           <SelectiveBloom
-            selection={bloomSelection} // Pass the state variable as selection
-            intensity={2.0} // Strength of the bloom effect
-            luminanceThreshold={0.1} // Minimum brightness for bloom to apply
-            luminanceSmoothing={0.9} // Smoothness of the transition for bloom
-            blendFunction={BlendFunction.ADD} // How the bloom effect is blended with the scene
+            selection={bloomSelection}
+            intensity={2.0}
+            luminanceThreshold={0.1}
+            luminanceSmoothing={0.9}
+            blendFunction={BlendFunction.ADD}
           />
         )}
       </EffectComposer>
@@ -227,5 +265,93 @@ export function EnhancedModelWithEffects(props) {
   );
 }
 
-// Preload the model to improve loading performance
+// Mobile Version without Effects
+export function EnhancedModelMobileWithEffects(props) {
+  return <EnhancedModelMobile {...props} />;
+}
+
+// Responsive Wrapper - Automatically selects appropriate version
+export function ResponsiveEnhancedModel(props) {
+  const { isMobile, isLowPerformance } = useDeviceDetection();
+  const [modelVersion, setModelVersion] = useState('loading');
+
+  useEffect(() => {
+    // Determine which version to use based on device capabilities
+    if (isMobile || isLowPerformance) {
+      setModelVersion('mobile');
+    } else {
+      setModelVersion('pc');
+    }
+  }, [isMobile, isLowPerformance]);
+
+  // Optional: Add performance monitoring
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'performance' in window) {
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (entry.entryType === 'measure' && entry.duration > 16.67) {
+            // If frame time > 16.67ms (60fps), consider switching to mobile version
+            console.warn('Performance warning: Frame time exceeded 16.67ms');
+          }
+        }
+      });
+      observer.observe({ entryTypes: ['measure'] });
+      return () => observer.disconnect();
+    }
+  }, []);
+
+  if (modelVersion === 'loading') {
+    return null; // or a loading spinner
+  }
+
+  return modelVersion === 'mobile' ? 
+    <EnhancedModelMobileWithEffects {...props} /> : 
+    <EnhancedModelPCWithEffects {...props} />;
+}
+
+// Export the original components for backward compatibility
+export const EnhancedModel = EnhancedModelPC;
+export const EnhancedModelWithEffects = EnhancedModelPCWithEffects;
+
+// Preload the model
 useGLTF.preload('/models/low_poly_isometric_room.glb');
+
+// Performance monitoring utility (optional)
+export const usePerformanceMonitor = () => {
+  const [fps, setFps] = useState(60);
+  const [frameTime, setFrameTime] = useState(0);
+
+  useEffect(() => {
+    let frameCount = 0;
+    let lastTime = performance.now();
+    let animationId;
+
+    const measurePerformance = (currentTime) => {
+      frameCount++;
+      const deltaTime = currentTime - lastTime;
+      
+      if (deltaTime >= 1000) { // Update every second
+        const currentFps = Math.round((frameCount * 1000) / deltaTime);
+        const avgFrameTime = deltaTime / frameCount;
+        
+        setFps(currentFps);
+        setFrameTime(avgFrameTime);
+        
+        frameCount = 0;
+        lastTime = currentTime;
+      }
+      
+      animationId = requestAnimationFrame(measurePerformance);
+    };
+
+    animationId = requestAnimationFrame(measurePerformance);
+    
+    return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+    };
+  }, []);
+
+  return { fps, frameTime };
+};

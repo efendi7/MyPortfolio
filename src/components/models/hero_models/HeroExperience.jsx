@@ -10,34 +10,34 @@ import { EnhancedModelWithEffects } from "./EnhancedModel";
 const HeroExperience = () => {
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
   const isTablet = useMediaQuery({ query: "(max-width: 1024px)" });
+  const isDesktop = !isMobile && !isTablet;
 
   return (
-    <Canvas 
-      camera={{ 
-        position: [-8, 1, -2], 
-        fov: 70,
+    <Canvas
+      camera={{
+        position: [-8, 1, -2],
+        fov: isMobile ? 75 : 65,
         near: 0.1,
-        far: 1000
+        far: 1000,
       }}
-      gl={{ 
-        antialias: true,
-        alpha: true 
+      gl={{
+        antialias: isDesktop, // nonaktifkan antialias di mobile
+        alpha: true,
       }}
-      shadows
+      shadows={isDesktop}
     >
-      {/* Sedikit terang tapi tetap gelap */}
-      <ambientLight intensity={0.45} color="#1a1a40" />
-
-      {/* Tambahan directional light sangat redup */}
+      {/* Pencahayaan minimal di mobile */}
+      <ambientLight intensity={isMobile ? 0.2 : 0.45} color="#1a1a40" />
       <directionalLight
         position={[10, 5, -5]}
-        intensity={0.1}
+        intensity={isMobile ? 0.05 : 0.15}
         color="#ffffff"
       />
 
       <OrbitControls
         enablePan={false}
-        enableZoom={!isTablet}
+        enableZoom={isDesktop}
+        enableRotate={isDesktop}
         maxDistance={25}
         minDistance={3}
         minPolarAngle={Math.PI / 8}
@@ -47,14 +47,14 @@ const HeroExperience = () => {
 
       <Suspense fallback={null}>
         <HeroLights />
-        <Particles count={150} />
+        <Particles count={isMobile ? 40 : isTablet ? 80 : 150} />
 
         <group
-          scale={isMobile ? 0.8 : 1.0}
+          scale={isMobile ? 0.6 : isTablet ? 0.8 : 1.0}
           position={[0, -1, 0]}
           rotation={[0, Math.PI / 6, 0]}
         >
-          <EnhancedModelWithEffects />
+          <EnhancedModelWithEffects enableBloom={isDesktop} />
         </group>
       </Suspense>
     </Canvas>
