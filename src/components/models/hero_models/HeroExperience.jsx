@@ -191,14 +191,35 @@ const OptimizedHeroExperience = () => {
       {isMobile ? <MobileLights /> : <DesktopLights />}
 
       <OrbitControls
-        enablePan={false}
-        enableZoom={isDesktop}
-        enableRotate={isDesktop}
-        maxDistance={25}
-        minDistance={3}
+        // FIXED: Enable basic interactions for all devices
+        enablePan={false} // Keep pan disabled for all devices
+        enableZoom={true} // Enable zoom for all devices
+        enableRotate={true} // Enable rotate for all devices
+        
+        // Mobile-optimized limits
+        maxDistance={isMobile ? 15 : 25} // Closer max distance for mobile
+        minDistance={isMobile ? 2 : 3}   // Closer min distance for mobile
         minPolarAngle={Math.PI / 8}
         maxPolarAngle={Math.PI / 1.8}
         target={[0, 0, 0]}
+        
+        // Mobile-specific optimizations
+        enableDamping={!isMobile} // Disable damping on mobile for better performance
+        dampingFactor={0.05}
+        
+        // Touch-friendly settings for mobile
+        touches={{
+          ONE: isMobile ? THREE.TOUCH.ROTATE : THREE.TOUCH.ROTATE,
+          TWO: isMobile ? THREE.TOUCH.DOLLY_PAN : THREE.TOUCH.DOLLY_PAN
+        }}
+        
+        // Rotation speed adjustment
+        rotateSpeed={isMobile ? 0.8 : 1.0} // Slightly slower rotation on mobile
+        zoomSpeed={isMobile ? 0.8 : 1.0}   // Slightly slower zoom on mobile
+        
+        // Auto-rotate option (optional - can be enabled for demo purposes)
+        autoRotate={isMobile} // Enable auto-rotate only on mobile
+        autoRotateSpeed={0.3}
       />
 
       <Suspense fallback={null}>
