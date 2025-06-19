@@ -309,6 +309,214 @@ export function ResponsiveEnhancedModel(props) {
     <EnhancedModelPCWithEffects {...props} />;
 }
 
+// Optimized HeroExperience Component
+export function OptimizedHeroExperience() {
+  const { isMobile, isLowPerformance } = useDeviceDetection();
+  const isTablet = typeof window !== 'undefined' && window.innerWidth <= 1024 && window.innerWidth > 768;
+  const isDesktop = !isMobile && !isTablet;
+
+  return (
+    <div style={{ width: '100%', height: '100vh' }}>
+      <Canvas
+        camera={{
+          position: [-8, 1, -2],
+          fov: isMobile ? 75 : 65,
+          near: 0.1,
+          far: 1000,
+        }}
+        gl={{
+          antialias: isDesktop,
+          alpha: true,
+          powerPreference: isMobile ? "low-power" : "high-performance",
+          stencil: false,
+          depth: true,
+        }}
+        shadows={isDesktop}
+        dpr={isMobile ? 1 : window.devicePixelRatio}
+      >
+        {/* Simplified lighting for mobile */}
+        {isMobile ? (
+          <MobileLights />
+        ) : (
+          <DesktopLights />
+        )}
+
+        <OrbitControls
+          enablePan={false}
+          enableZoom={isDesktop}
+          enableRotate={isDesktop}
+          maxDistance={25}
+          minDistance={3}
+          minPolarAngle={Math.PI / 8}
+          maxPolarAngle={Math.PI / 1.8}
+          target={[0, 0, 0]}
+        />
+
+        <Suspense fallback={null}>
+          {/* Conditional particles rendering */}
+          {!isMobile && <OptimizedParticles count={isTablet ? 80 : 150} />}
+          
+          <group
+            scale={isMobile ? 0.6 : isTablet ? 0.8 : 1.0}
+            position={isMobile ? [0, -2.5, 0] : [0, -1, 0]} // Lower position for mobile
+            rotation={[0, Math.PI / 6, 0]}
+          >
+            <ResponsiveEnhancedModel enableBloom={isDesktop} />
+          </group>
+        </Suspense>
+      </Canvas>
+    </div>
+  );
+}
+
+// Simplified Mobile Lights
+const MobileLights = () => (
+  <>
+    <ambientLight intensity={0.4} color="#ffffff" />
+    <directionalLight
+      position={[5, 10, 5]}
+      intensity={0.3}
+      color="#ffffff"
+    />
+    {/* Single point light for computer screen */}
+    <pointLight
+      position={[-3.2, 2.5, -0.8]}
+      intensity={8}
+      color="#00ff88"
+      distance={2}
+      decay={1}
+    />
+  </>
+);
+
+// Full Desktop Lights (your original HeroLights)
+const DesktopLights = () => (
+  <>
+    <spotLight
+      position={[-1, 5, 0]}
+      angle={0.4}
+      penumbra={0.2}
+      intensity={100}
+      color="#ffffff"
+      castShadow
+      target-position={[-3, 1.5, -1]}
+    />
+    
+    <spotLight
+      position={[-2.5, 4, 0.5]}
+      angle={0.3}
+      penumbra={0.3}
+      intensity={60}
+      color="#ffffff"
+      castShadow
+      target-position={[-3, 2, -1]}
+    />
+    
+    <ambientLight color="#404040" intensity={0.2} />
+    
+    <primitive
+      object={new THREE.RectAreaLight("#ffffff", 3, 3, 2)}
+      position={[0, 5.5, 0]}
+      rotation={[-Math.PI / 2, 0, 0]}
+      intensity={0.5}
+    />
+    
+    <pointLight
+      position={[-3.2, 2.5, -0.8]}
+      intensity={15}
+      color="#00ff88"
+      distance={1.5}
+      decay={2}
+    />
+    
+    <pointLight
+      position={[-0.5, 2, -1.8]}
+      intensity={6}
+      color="#fff4e6"
+      distance={1}
+      decay={3}
+    />
+    
+    <pointLight
+      position={[1.5, 2.5, -2]}
+      intensity={35}
+      color="#fff8dc"
+      distance={2.5}
+      decay={2}
+      castShadow
+    />
+  </>
+);
+
+// Optimized Particles Component
+const OptimizedParticles = ({ count = 150 }) => {
+  const mesh = useRef();
+  
+  const particles = useMemo(() => {
+    const temp = [];
+    for (let i = 0; i < count; i++) {
+      temp.push({
+        position: [
+          (Math.random() - 0.5) * 20,
+          Math.random() * 15 + 2,
+          (Math.random() - 0.5) * 20,
+        ],
+        speed: 0.01 + Math.random() * 0.02,
+      });
+    }
+    return temp;
+  }, [count]);
+
+  useFrame(() => {
+    if (!mesh.current) return;
+    
+    const positions = mesh.current.geometry.attributes.position.array;
+    for (let i = 0; i < count; i++) {
+      let y = positions[i * 3 + 1];
+      y -= particles[i].speed;
+      
+      if (y < -5) {
+        y = Math.random() * 15 + 10;
+      }
+      
+      positions[i * 3 + 1] = y;
+    }
+    mesh.current.geometry.attributes.position.needsUpdate = true;
+  });
+
+  const positions = useMemo(() => {
+    const pos = new Float32Array(count * 3);
+    particles.forEach((p, i) => {
+      pos[i * 3] = p.position[0];
+      pos[i * 3 + 1] = p.position[1];
+      pos[i * 3 + 2] = p.position[2];
+    });
+    return pos;
+  }, [particles, count]);
+
+  return (
+    <points ref={mesh}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          count={count}
+          array={positions}
+          itemSize={3}
+        />
+      </bufferGeometry>
+      <pointsMaterial
+        color="#ffffff"
+        size={0.05}
+        sizeAttenuation={true}
+        transparent={true}
+        opacity={0.6}
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
+    </points>
+  );
+};
+
 // Export the original components for backward compatibility
 export const EnhancedModel = EnhancedModelPC;
 export const EnhancedModelWithEffects = EnhancedModelPCWithEffects;
