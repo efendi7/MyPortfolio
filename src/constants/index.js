@@ -29,10 +29,10 @@ const words = [
 ];
 
 const counterItems = [
-  { value: 15, suffix: "+", label: "Years of Experience" },
-  { value: 200, suffix: "+", label: "Satisfied Clients" },
-  { value: 108, suffix: "+", label: "Completed Projects" },
-  { value: 90, suffix: "%", label: "Client Retention Rate" },
+  { value: 0.6, suffix: "+", label: "Years of Internship Experience" },
+  { value: 0o3, suffix: "+", label: "Personal Projects" },
+  { value: 0o2, suffix: "+", label: "Team Projects" },
+  { value: 85, suffix: "%", label: "Project Completion Rate" },
 ];
 
 const logoIconsList = [
@@ -147,27 +147,33 @@ const techStackIcons = [
 
 const expCards = [
   {
-    review: "Adrian brought creativity and technical expertise to the team, significantly improving our frontend performance. His work has been invaluable in delivering faster experiences.",
-    imgPath: "/images/exp1.png",
-    logoPath: "/images/logo1.png",
-    title: "Frontend Developer",
-    date: "January 2023 - Present",
+    review: "Stoqy is a comprehensive web application meticulously designed to empower businesses, particularly those with warehouse operations, to manage their inventory efficiently and accurately. It significantly simplifies stock recording and monitoring, enhances data accuracy, streamlines item receipt and dispatch processes, and provides highly informative stock reports for better decision-making.",
+    imgPath: "/images/stoqy-web.png",
+    logoPath: "/images/stoqy-icon.png",
+    title: "Fullstack Developer",
+    date: "February 2025 - March 2025",
     responsibilities: [
-      "Developed and maintained user-facing features for the Hostinger website.",
-      "Collaborated closely with UI/UX designers to ensure seamless user experiences.",
-      "Optimized web applications for maximum speed and scalability.",
+      "Architected, developed, and maintained the entire web application, covering both frontend (Tailwind CSS, Flowbite) and backend (Laravel 11, MySQL) components.",
+        "Implemented robust inventory management features including product CRUD, stock in/out transactions, real-time monitoring, and stock-taking functionalities.",
+        "Designed and optimized the MySQL database schema for efficient data storage and retrieval, ensuring data integrity across product, stock, supplier, and user modules.",
+        "Developed a multi-role authentication and authorization system (Admin, Warehouse Manager, Staff) to manage user permissions and secure data access.",
+        "Collaborated with UI/UX principles to translate design concepts into a responsive and intuitive user interface using Tailwind CSS and Flowbite components.",
+        "Optimized application performance and scalability through efficient code practices and database query tuning, ensuring smooth operation for various business sizes.",
+        "Managed version control using Git and GitHub.",
     ],
   },
   {
-    review: "Adrian’s contributions to Docker's web applications have been outstanding. He approaches challenges with a problem-solving mindset.",
+    review: "AmbilPaket.com is a Laravel-based logistics platform designed to manage end-to-end parcel delivery operations. The application features role-based access control (RBAC), real-time parcel tracking, agent and courier management, financial reporting, and a reward system for users. It supports barcode-based delivery processes, point-based merchandise redemption, and custom dashboards for roles such as Superadmin, Hub Admin, Agent, Courier, Customer, and SME (UMKM).",
     imgPath: "/images/exp2.png",
-    logoPath: "/images/logo2.png",
-    title: "Full Stack Developer",
-    date: "June 2020 - December 2023",
+    logoPath: "/images/ambilpaket-icon.png",
+    title: "Backend Developer",
+    date: "March 2025 - May 2025",
     responsibilities: [
-      "Led the development of Docker's web applications, focusing on scalability.",
-      "Worked with backend engineers to integrate APIs seamlessly with the frontend.",
-      "Contributed to open-source projects that were used with the Docker ecosystem.",
+      "Integrated Laravel backend APIs with the frontend interface to ensure seamless delivery of core features.",
+    "Adjusted and improved frontend components to properly handle and display data from the backend.",
+    "Developed and tested backend features for shipping, user management, and authentication using RESTful API architecture.",
+    "Collaborated with the frontend team to ensure proper understanding and implementation of backend logic and endpoints.",
+  "Managed version control using Git and GitHub.",
     ],
   },
   {
