@@ -152,15 +152,16 @@ const expCards = [
     logoPath: "/images/stoqy-icon.png",
     title: "Fullstack Developer",
     date: "February 2025 - March 2025",
-    responsibilities: [
-      "Architected, developed, and maintained the entire web application, covering both frontend (Tailwind CSS, Flowbite) and backend (Laravel 11, MySQL) components.",
-        "Implemented robust inventory management features including product CRUD, stock in/out transactions, real-time monitoring, and stock-taking functionalities.",
-        "Designed and optimized the MySQL database schema for efficient data storage and retrieval, ensuring data integrity across product, stock, supplier, and user modules.",
-        "Developed a multi-role authentication and authorization system (Admin, Warehouse Manager, Staff) to manage user permissions and secure data access.",
-        "Collaborated with UI/UX principles to translate design concepts into a responsive and intuitive user interface using Tailwind CSS and Flowbite components.",
-        "Optimized application performance and scalability through efficient code practices and database query tuning, ensuring smooth operation for various business sizes.",
-        "Managed version control using Git and GitHub.",
-    ],
+   responsibilities: [
+  "Architected, developed, and maintained the entire web application, covering both frontend (Vue 3, Inertia.js, Tailwind CSS, Flowbite) and backend (Laravel 11, MySQL) components.",
+  "Implemented robust inventory management features including product CRUD, stock in/out transactions, real-time monitoring, and stock-taking functionalities.",
+  "Designed and optimized the MySQL database schema for efficient data storage and retrieval, ensuring data integrity across product, stock, supplier, and user modules.",
+  "Developed a multi-role authentication and authorization system (Admin, Warehouse Manager, Staff) to manage user permissions and secure data access.",
+  "Collaborated with UI/UX principles to translate design concepts into a responsive and intuitive user interface using Vue 3, Tailwind CSS, and Flowbite components.",
+  "Optimized application performance and scalability through efficient code practices and database query tuning, ensuring smooth operation for various business sizes.",
+  "Managed version control using Git and GitHub.",
+],
+
   },
   {
     review: "AmbilPaket.com is a Laravel-based logistics platform designed to manage end-to-end parcel delivery operations. The application features role-based access control (RBAC), real-time parcel tracking, agent and courier management, financial reporting, and a reward system for users. It supports barcode-based delivery processes, point-based merchandise redemption, and custom dashboards for roles such as Superadmin, Hub Admin, Agent, Courier, Customer, and SME (UMKM).",
