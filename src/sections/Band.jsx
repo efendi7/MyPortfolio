@@ -20,7 +20,7 @@ export function Band({ maxSpeed = 50, minSpeed = 10 }) {
   const segmentProps = { type: 'dynamic', canSleep: true, colliders: false, angularDamping: 2, linearDamping: 2 };
   
   const { nodes, materials } = useGLTF('/models/tagid.glb');
-  const texture = useTexture('public/images/textures/bandinformatika.png');
+  const texture = useTexture('/images/textures/bandinformatika.png');
   
   const { width, height } = useThree((state) => state.size);
   const [curve] = useState(() => new THREE.CatmullRomCurve3([new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()]));
