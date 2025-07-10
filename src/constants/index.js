@@ -165,7 +165,7 @@ const expCards = [
   },
   {
     review: "AmbilPaket.com is a Laravel-based logistics platform designed to manage end-to-end parcel delivery operations. The application features role-based access control (RBAC), real-time parcel tracking, agent and courier management, financial reporting, and a reward system for users. It supports barcode-based delivery processes, point-based merchandise redemption, and custom dashboards for roles such as Superadmin, Hub Admin, Agent, Courier, Customer, and SME (UMKM).",
-    imgPath: "/images/exp2.png",
+    imgPath: "/images/amblpkt.png",
     logoPath: "/images/ambilpaket-icon.png",
     title: "Backend Developer",
     date: "March 2025 - May 2025",
