@@ -15,6 +15,21 @@ const Hero = () => {
     );
   });
 
+  // Function to handle CV download
+  const handleDownloadCV = () => {
+    // Convert Google Drive view link to direct download link
+    const fileId = "1I4VJIhzfGvLLiTXH9HL0I5j0EIlJXaVm";
+    const downloadLink = `https://drive.google.com/uc?export=download&id=${fileId}`;
+    
+    // Create a temporary anchor element and trigger download
+    const link = document.createElement('a');
+    link.href = downloadLink;
+    link.download = 'Efendi_CV.pdf'; // Optional: specify filename
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <section id="hero" className="relative overflow-hidden">
       <div className="absolute top-0 left-0 z-10">
@@ -51,15 +66,24 @@ const Hero = () => {
             </div>
 
             <p className="text-white-50 md:text-xl relative z-10 pointer-events-none">
-             Hello! I’m Efendi, a passionate web developer. <br/> dedicated to continuous learning and self-improvement. <br />
+             Hello! I'm Efendi, a passionate web developer. <br/> dedicated to continuous learning and self-improvement. <br />
               I study at Universitas Negeri Semarang — thrilled to connect and share ideas!
             </p>
 
-            <Button
-              text="See My Work"
-              className="md:w-80 md:h-16 w-60 h-12"
-              id="counter"
-            />
+            {/* Button Container */}
+            <div className="flex md:flex-row flex-col gap-4">
+              <Button
+                text="See My Work"
+                className="md:w-80 md:h-16 w-60 h-12"
+                id="counter"
+              />
+              
+              <Button
+                text="Download my CV"
+                className="md:w-80 md:h-16 w-60 h-12"
+                onClick={handleDownloadCV}
+              />
+            </div>
           </div>
         </header>
 
