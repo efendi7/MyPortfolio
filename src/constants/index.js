@@ -4,14 +4,16 @@ import {
   javascript,
   typescript,
   reactjs,
-  redux,
+  vue,
   tailwind,
   nodejs,
-  mongodb,
-  threejs,
+  laravel,
+  mysql,
   git,
   figma,
   docker,
+  next,
+  nest,
 } from "../assets";
 
 const navLinks = [
@@ -105,28 +107,6 @@ const abilities = [
   },
 ];
 
-const techStackImgs = [
-  {
-    name: "React Developer",
-    imgPath: "/images/logos/react.png",
-  },
-  {
-    name: "Python Developer",
-    imgPath: "/images/logos/python.svg",
-  },
-  {
-    name: "Backend Developer",
-    imgPath: "/images/logos/node.png",
-  },
-  {
-    name: "Interactive Developer",
-    imgPath: "/images/logos/three.png",
-  },
-  {
-    name: "Project Manager",
-    imgPath: "/images/logos/git.svg",
-  },
-];
 
 const technologies = [
   {
@@ -150,8 +130,8 @@ const technologies = [
     icon: reactjs,
   },
   {
-    name: "Redux Toolkit",
-    icon: redux,
+    name: "Vue JS",
+    icon: vue,
   },
   {
     name: "Tailwind CSS",
@@ -162,12 +142,12 @@ const technologies = [
     icon: nodejs,
   },
   {
-    name: "MongoDB",
-    icon: mongodb,
+    name: "Laravel",
+    icon: laravel,
   },
   {
-    name: "Three JS",
-    icon: threejs,
+    name: "Mysql",
+    icon: mysql,
   },
   {
     name: "git",
@@ -178,9 +158,17 @@ const technologies = [
     icon: figma,
   },
   {
-    name: "docker",
-    icon: docker,
+    name: "Nest JS",
+    icon: nest,
   },
+  {
+  name: "Next JS",
+    icon: next,
+  },
+  // {
+  // name: "Nest JS",
+  //   icon: nest,
+  // },
 ];
 
 export default technologies;
@@ -320,7 +308,7 @@ export {
   testimonials,
   socialImgs,
   // techStackIcons,
-  techStackImgs,
+  // techStackImgs,
   navLinks,
   technologies
 };

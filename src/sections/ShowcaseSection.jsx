@@ -5,7 +5,7 @@ import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Mock data untuk demo
+// Extended mock data with 6 projects
 const projects = [
   {
     id: 1,
@@ -47,6 +47,48 @@ const projects = [
       { name: "PostgreSQL", icon: "🐘", color: "#336791" },
       { name: "JWT", icon: "🔐", color: "#000000" }
     ]
+  },
+  {
+    id: 4,
+    title: "Chat Application",
+    description: "Real-time messaging app with WebSocket support",
+    image: "https://images.unsplash.com/photo-1577563908411-5077b6dc7624?w=400&h=300&fit=crop",
+    github: "https://github.com/example/chat-app",
+    category: "fullstack",
+    techStack: [
+      { name: "React", icon: "⚛️", color: "#61DAFB" },
+      { name: "Socket.io", icon: "🔌", color: "#010101" },
+      { name: "Node.js", icon: "🟢", color: "#68A063" },
+      { name: "Redis", icon: "🔴", color: "#DC382D" }
+    ]
+  },
+  {
+    id: 5,
+    title: "Weather Dashboard",
+    description: "Interactive weather visualization with charts",
+    image: "https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=400&h=300&fit=crop",
+    github: "https://github.com/example/weather-dashboard",
+    category: "frontend",
+    techStack: [
+      { name: "Vue.js", icon: "🟢", color: "#4FC08D" },
+      { name: "Chart.js", icon: "📊", color: "#FF6384" },
+      { name: "TypeScript", icon: "🔷", color: "#3178C6" },
+      { name: "Sass", icon: "🎨", color: "#CC6699" }
+    ]
+  },
+  {
+    id: 6,
+    title: "Authentication Service",
+    description: "Secure authentication microservice with JWT",
+    image: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&h=300&fit=crop",
+    github: "https://github.com/example/auth-service",
+    category: "backend",
+    techStack: [
+      { name: "Python", icon: "🐍", color: "#3776AB" },
+      { name: "FastAPI", icon: "⚡", color: "#009688" },
+      { name: "PostgreSQL", icon: "🐘", color: "#336791" },
+      { name: "Docker", icon: "🐳", color: "#2496ED" }
+    ]
   }
 ];
 
@@ -55,7 +97,34 @@ const categories = ["all", "frontend", "backend", "fullstack"];
 const AppShowcase = () => {
   const sectionRef = useRef(null);
   const cardRefs = useRef([]);
+  const gridRef = useRef(null);
   const [activeCategory, setActiveCategory] = useState("all");
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  const filteredProjects =
+    activeCategory === "all"
+      ? projects
+      : projects.filter((p) => p.category === activeCategory);
+
+  const handleCategoryChange = (newCategory) => {
+    if (newCategory === activeCategory || isTransitioning) return;
+    
+    setIsTransitioning(true);
+    
+    // Animate out current cards
+    gsap.to(cardRefs.current.filter(card => card), {
+      opacity: 0,
+      y: 20,
+      scale: 0.95,
+      duration: 0.2,
+      stagger: 0.03,
+      ease: "power2.in",
+      onComplete: () => {
+        setActiveCategory(newCategory);
+        setIsTransitioning(false);
+      }
+    });
+  };
 
   useGSAP(() => {
     gsap.fromTo(
@@ -64,33 +133,22 @@ const AppShowcase = () => {
       { opacity: 1, y: 0, duration: 1.5 }
     );
 
-    cardRefs.current.forEach((card, i) => {
-      if (card) {
-        gsap.fromTo(
-          card,
-          { y: 100, opacity: 0, scale: 0.8 },
-          {
-            y: 0,
-            opacity: 1,
-            scale: 1,
-            duration: 1.2,
-            delay: i * 0.15,
-            ease: "back.out(1.7)",
-            scrollTrigger: {
-              trigger: card,
-              start: "top bottom-=100",
-              toggleActions: "play none none reverse"
-            },
-          }
-        );
-      }
-    });
+    // Animate in cards after category change
+    if (cardRefs.current.length > 0) {
+      gsap.fromTo(cardRefs.current.filter(card => card), 
+        { opacity: 0, y: 20, scale: 0.95 },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.4,
+          stagger: 0.05,
+          ease: "back.out(1.7)",
+          delay: 0.1
+        }
+      );
+    }
   }, [activeCategory]);
-
-  const filteredProjects =
-    activeCategory === "all"
-      ? projects
-      : projects.filter((p) => p.category === activeCategory);
 
   return (
     <section ref={sectionRef} id="work" className="px-6 py-16 relative">
@@ -109,17 +167,18 @@ const AppShowcase = () => {
         </p>
 
         {/* Enhanced Filter */}
-        <div className="flex justify-center gap-3 mb-16">
+        <div className="flex justify-center gap-3 mb-16 flex-wrap">
           {categories.map((cat) => (
             <button
               key={cat}
-              onClick={() => setActiveCategory(cat)}
+              onClick={() => handleCategoryChange(cat)}
+              disabled={isTransitioning}
               className={`
                 px-6 py-3 rounded-full text-sm font-medium transition-all duration-300
-                relative overflow-hidden group
+                relative overflow-hidden group disabled:opacity-50
                 ${activeCategory === cat 
                   ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg shadow-blue-500/25" 
-                  : "bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white border border-white/10"
+                  : "bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white border border-white/10 hover:border-white/20"
                 }
               `}
             >
@@ -133,8 +192,11 @@ const AppShowcase = () => {
           ))}
         </div>
 
-        {/* Enhanced Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Projects Grid */}
+        <div 
+          ref={gridRef}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 min-h-[400px]"
+        >
           {filteredProjects.map((project, i) => (
             <div
               key={project.id}
@@ -201,36 +263,33 @@ const AppShowcase = () => {
                     <div className="flex flex-wrap gap-2">
                       {project.techStack.map((tech, idx) => (
                         <div
-                        key={tech.name}
-                        className="group/tech relative isolate z-10 overflow-hidden bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-full text-xs font-medium text-gray-300 transition-all duration-300 hover:scale-105 border border-white/10 hover:border-white/20"
-                        style={{
-                          '--delay': `${idx * 0.1}s`
-                        }}
-                      >
+                          key={tech.name}
+                          className="group/tech relative isolate z-10 overflow-hidden bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-full text-xs font-medium text-gray-300 transition-all duration-300 hover:scale-105 border border-white/10 hover:border-white/20"
+                          style={{
+                            '--delay': `${idx * 0.1}s`
+                          }}
+                        >
+                          {/* Glowing effect */}
+                          <div 
+                            className="absolute inset-0 rounded-full opacity-0 group-hover/tech:opacity-20 transition-opacity duration-300 blur-sm z-0"
+                            style={{ backgroundColor: tech.color }}
+                          ></div>
 
-                         {/* Glowing effect */}
-<div 
-  className="absolute inset-0 rounded-full opacity-0 group-hover/tech:opacity-20 transition-opacity duration-300 blur-sm z-0"
-  style={{ backgroundColor: tech.color }}
-></div>
+                          {/* Content */}
+                          <div className="relative z-10 flex items-center gap-2">
+                            <span className="text-sm filter group-hover/tech:brightness-150 transition-all duration-300">
+                              {tech.icon}
+                            </span>
+                            <span className="group-hover/tech:text-white transition-colors duration-300">
+                              {tech.name}
+                            </span>
+                          </div>
 
-{/* Content */}
-<div className="relative z-10 flex items-center gap-2">
-  <span className="text-sm filter group-hover/tech:brightness-150 transition-all duration-300">
-    {tech.icon}
-  </span>
-  <span className="group-hover/tech:text-white transition-colors duration-300">
-    {tech.name}
-  </span>
-</div>
-
-
-{/* Border glow */}
-<div 
-  className="absolute inset-0 rounded-full border-2 opacity-0 group-hover/tech:opacity-60 transition-all duration-300 z-0"
-  style={{ borderColor: tech.color }}
-></div>
-
+                          {/* Border glow */}
+                          <div 
+                            className="absolute inset-0 rounded-full border-2 opacity-0 group-hover/tech:opacity-60 transition-all duration-300 z-0"
+                            style={{ borderColor: tech.color }}
+                          ></div>
                         </div>
                       ))}
                     </div>
@@ -251,6 +310,13 @@ const AppShowcase = () => {
             <p className="text-gray-400 text-lg">No projects found in this category</p>
           </div>
         )}
+
+        {/* Project count indicator */}
+        <div className="text-center mt-12">
+          <p className="text-gray-500 text-sm">
+            Showing {filteredProjects.length} of {projects.length} projects
+          </p>
+        </div>
       </div>
     </section>
   );
