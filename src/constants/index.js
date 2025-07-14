@@ -29,7 +29,7 @@ const words = [
 ];
 
 const counterItems = [
-  { value: 0.6, suffix: "+", label: "Years of Internship Experience" },
+  { value: 1.0, suffix: "+", label: "Years of Internship Experience" },
   { value: 0o3, suffix: "+", label: "Personal Projects" },
   { value: 0o2, suffix: "+", label: "Team Projects" },
   { value: 85, suffix: "%", label: "Project Completion Rate" },

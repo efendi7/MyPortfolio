@@ -243,7 +243,7 @@ section {
   }
 
   .timeline {
-    @apply absolute z-30 h-[110%] -top-10 w-14 md:w-28 bg-black;
+    @apply absolute z-30 h-[110%] -top-10 w-14 md:w-28 bg-transparent;
   }
 
   .timeline-logo {
@@ -465,6 +465,7 @@ section {
   transform: translate(-50%, -50%);
   filter: blur(10px);
   filter: saturate(200);
+  -webkit-filter: saturate(200);
 }
 
 .card:hover::before {
