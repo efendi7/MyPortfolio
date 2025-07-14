@@ -1,3 +1,19 @@
+import {
+  html,
+  css,
+  javascript,
+  typescript,
+  reactjs,
+  redux,
+  tailwind,
+  nodejs,
+  mongodb,
+  threejs,
+  git,
+  figma,
+  docker,
+} from "../assets";
+
 const navLinks = [
   {
     name: "Work",
@@ -112,38 +128,62 @@ const techStackImgs = [
   },
 ];
 
-const techStackIcons = [
+const technologies = [
   {
-    name: "React Developer",
-    modelPath: "/models/react_logo-transformed.glb",
-    scale: 1,
-    rotation: [0, 0, 0],
+    name: "HTML 5",
+    icon: html,
   },
   {
-    name: "Python Developer",
-    modelPath: "/models/python-transformed.glb",
-    scale: 0.8,
-    rotation: [0, 0, 0],
+    name: "CSS 3",
+    icon: css,
   },
   {
-    name: "Backend Developer",
-    modelPath: "/models/node-transformed.glb",
-    scale: 5,
-    rotation: [0, -Math.PI / 2, 0],
+    name: "JavaScript",
+    icon: javascript,
   },
   {
-    name: "Interactive Developer",
-    modelPath: "/models/three.js-transformed.glb",
-    scale: 0.05,
-    rotation: [0, 0, 0],
+    name: "TypeScript",
+    icon: typescript,
   },
   {
-    name: "Project Manager",
-    modelPath: "/models/git-svg-transformed.glb",
-    scale: 0.05,
-    rotation: [0, -Math.PI / 4, 0],
+    name: "React JS",
+    icon: reactjs,
+  },
+  {
+    name: "Redux Toolkit",
+    icon: redux,
+  },
+  {
+    name: "Tailwind CSS",
+    icon: tailwind,
+  },
+  {
+    name: "Node JS",
+    icon: nodejs,
+  },
+  {
+    name: "MongoDB",
+    icon: mongodb,
+  },
+  {
+    name: "Three JS",
+    icon: threejs,
+  },
+  {
+    name: "git",
+    icon: git,
+  },
+  {
+    name: "figma",
+    icon: figma,
+  },
+  {
+    name: "docker",
+    icon: docker,
   },
 ];
+
+export default technologies;
 
 const expCards = [
   {
@@ -279,7 +319,8 @@ export {
   expLogos,
   testimonials,
   socialImgs,
-  techStackIcons,
+  // techStackIcons,
   techStackImgs,
   navLinks,
+  technologies
 };
